@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>1acc.finance — One Account for Effortless Web3 Wealth Management</title>
+  <meta name="description" content="A cross-chain smart portfolio manager that unifies CEX and DeFi yields into one gasless, bridgeless dashboard."/>
+  <meta name="theme-color" content="#3B82F6" />
+  <style>
+    :root{
+      --blue:#3B82F6;--deep:#1E3A8A;--muted:#64748b;--bg:#F5F7FA;--card:#ffffff;
+      --shadow:0 10px 30px rgba(30,58,138,.12);--radius:16px;
+      --grad: radial-gradient(1000px 400px at 20% -10%,#dbeafe,transparent),
+              radial-gradient(800px 400px at 80% -10%,#bfdbfe,transparent),
+              linear-gradient(180deg,#ffffff,#f8fafc);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:#0f172a;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    a{color:var(--blue);text-decoration:none}
+    .container{width:min(1120px,92%);margin-inline:auto}
+    header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.9);
+      backdrop-filter:saturate(1.2) blur(8px);border-bottom:1px solid #e5e7eb}
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+    .brand{font-weight:800;font-size:20px;color:var(--deep)}
+    .menu{display:flex;gap:22px;align-items:center}
+    .menu a{color:#0f172a;font-weight:500}
+    .inline-form{display:flex;gap:8px;align-items:center}
+    input[type=email]{padding:10px 12px;border-radius:8px;border:1px solid #d1d5db}
+    button,.btn{display:inline-flex;align-items:center;gap:8px;background:var(--blue);color:#fff;
+      padding:10px 16px;border-radius:12px;font-weight:600;box-shadow:var(--shadow);border:0;cursor:pointer}
+    .hero{background:var(--grad);border-bottom:1px solid #e5e7eb}
+    .hero .wrap{display:grid;grid-template-columns:1.2fr 1fr;gap:36px;align-items:center;padding:72px 0}
+    h1{font-size:42px;line-height:1.1;margin:0 0 12px;color:#0b1220}
+    .sub{font-size:18px;color:var(--muted);margin:0 0 22px}
+    .kpis{display:flex;gap:22px;flex-wrap:wrap}
+    .kpi{background:var(--card);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);min-width:150px}
+    .kpi b{display:block;font-size:20px;color:var(--deep)}
+    .preview{background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:22px;border:1px solid #e5e7eb}
+    .preview h3{color:var(--deep);margin-bottom:8px;text-align:center}
+    .preview ul{list-style:none;padding:0;margin:0}
+    .preview li{padding:8px 0;border-bottom:1px solid #f1f5f9;color:#334155}
+    .section{padding:36px 0}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .card{background:var(--card);border:1px solid #e5e7eb;border-radius:16px;padding:18px;box-shadow:var(--shadow)}
+    .badge{display:inline-block;font-size:12px;padding:4px 8px;border-radius:999px;background:#eff6ff;color:var(--deep);border:1px solid #bfdbfe;margin-left:8px}
+    .list{display:grid;gap:10px}
+    .list li{display:flex;gap:8px}
+    table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;background:#fff;box-shadow:var(--shadow)}
+    th,td{padding:14px;border-bottom:1px solid #e5e7eb;text-align:left}
+    th{background:#f1f5f9;font-weight:700;color:#0b1220}
+    tr:last-child td{border-bottom:none}
+    .cta{margin:40px 0;background:linear-gradient(90deg,#2563eb,#1e40af);border-radius:20px;color:#fff;padding:24px;border:1px solid #93c5fd;box-shadow:var(--shadow)}
+    .cta h3{margin:0 0 10px}
+    .cta form{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .cta form input[type=email]{flex:1;border:none}
+    .cta form button{background:#fff;color:#1e3a8a}
+    footer{padding:36px 0;color:#64748b;text-align:center}
+    /* Email Gate */
+    .overlay{
+      position:fixed;inset:0;background:rgba(15,23,42,0.88);
+      display:flex;justify-content:center;align-items:center;z-index:9999;
+      text-align:center;padding:20px;
+    }
+    .modal{
+      background:#fff;border-radius:16px;box-shadow:var(--shadow);
+      padding:36px 28px;max-width:420px;width:100%;animation:fadeIn .4s ease;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+    }
+    .modal h2{color:var(--deep);margin:0 0 10px;font-size:24px}
+    .modal p{color:var(--muted);margin:0 0 16px}
+    .modal form{width:100%;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+    .modal input[type=email]{flex:1;min-width:60%;padding:12px}
+    .modal button{padding:12px 20px}
+    .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#0ea5e9;color:#fff;padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.4s}
+    .toast.show{opacity:1}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+    @media(max-width:960px){.hero .wrap{grid-template-columns:1fr}.menu{display:none}.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <!-- Email Gate -->
+  <div class="overlay" id="emailGate">
+    <div class="modal">
+      <h2>Join the 1acc.finance Early Access</h2>
+      <p>Enter your email to explore our unified Web3 wealth dashboard.</p>
+      <form id="gateForm">
+        <input type="email" id="gateEmail" name="email" placeholder="you@example.com" required>
+        <button type="submit">Enter</button>
+      </form>
+      <p style="margin-top:10px;font-size:12px;color:#94a3b8">We only use your email to share early access updates.</p>
+    </div>
+  </div>
+  <div class="toast" id="toast">Thanks for joining! 🎉</div>
+
+  <!-- Header -->
+  <header>
+    <div class="container nav">
+      <div class="brand">1acc.finance</div>
+      <nav class="menu">
+        <a href="#features">Features</a>
+        <a href="#how">How it Works</a>
+        <a href="#tech">Tech</a>
+        <a href="#market">Market</a>
+        <a href="#team">Team</a>
+      </nav>
+      <form class="inline-form" id="topForm">
+        <input type="email" name="email" placeholder="Enter your email" required>
+        <button type="submit">Join</button>
+      </form>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container wrap">
+      <div>
+        <h1>One Account for Effortless Web3 Wealth</h1>
+        <p class="sub">Unify your <b>CEX + DeFi yields</b> in one gasless, bridgeless, automated dashboard. Connect, allocate, and track — in one place.</p>
+        <div class="kpis">
+          <div class="kpi"><b>Gasless</b><span class="muted">Cross‑chain execution</span></div>
+          <div class="kpi"><b>Bridgeless</b><span class="muted">No manual hops</span></div>
+          <div class="kpi"><b>Unified</b><span class="muted">CEX + DeFi</span></div>
+        </div>
+      </div>
+      <div class="preview">
+        <h3>Smart Portfolio Manager</h3>
+        <ul>
+          <li>📊 Real‑time yield comparison across protocols</li>
+          <li>⚙️ One‑click allocation and auto‑compound</li>
+          <li>🔒 Risk‑scored strategies and transparency</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="section container">
+    <h2>Why 1acc<span class="badge">CEX + DeFi</span></h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Unified Dashboard</h3>
+        <p class="muted">Connect wallets and exchange accounts to track total portfolio, yield, and risk in one place.</p>
+      </div>
+      <div class="card">
+        <h3>Smart Execution</h3>
+        <p class="muted">Gasless cross‑chain transactions via relayers and account abstraction. No bridges, no stress.</p>
+      </div>
+      <div class="card">
+        <h3>Risk‑Aware Strategies</h3>
+        <p class="muted">Protocol scoring blends on‑chain data and CEX APIs to evaluate safety and sustainability.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section id="how" class="section container">
+    <h2>How It Works</h2>
+    <div class="grid">
+      <div class="card"><b>1. Connect</b><p class="muted">Authorize your wallets & CEX accounts securely.</p></div>
+      <div class="card"><b>2. Discover</b><p class="muted">Compare yields and risk across chains & platforms.</p></div>
+      <div class="card"><b>3. Allocate</b><p class="muted">One‑click deployment with automated routing.</p></div>
+      <div class="card"><b>4. Automate</b><p class="muted">Auto‑compound, rebalance, and schedule withdrawals.</p></div>
+      <div class="card"><b>5. Track</b><p class="muted">Real‑time analytics for portfolio and yield performance.</p></div>
+    </div>
+  </section>
+
+  <!-- Tech -->
+  <section id="tech" class="section container">
+    <h2>Under the Hood</h2>
+    <ul class="list">
+      <li><b>Aggregator Engine:</b> fetches & compares CEX Earn, staking, and liquidity pools.</li>
+      <li><b>Smart Execution Layer:</b> handles gasless cross‑chain transactions via relayers / AA.</li>
+      <li><b>Unified Vaults:</b> automate strategies with auditable, transparent logic.</li>
+      <li><b>Yield & Risk Layer:</b> real‑time APYs + protocol risk scoring for better decisions.</li>
+    </ul>
+  </section>
+
+  <!-- Market -->
+  <section id="market" class="section container">
+    <h2>Market & Positioning</h2>
+    <p class="muted">Massive liquidity, fragmented access. 1acc.finance unlocks trapped TVL by connecting CEX + DeFi with automation.</p>
+    <table aria-label="Competitive landscape">
+      <thead>
+        <tr>
+          <th>Platform</th><th>CEX + DeFi</th><th>Cross‑chain</th><th>Auto Exec</th><th>Risk Scoring</th><th>Dashboard for All Accounts</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Zapper / DeBank</td><td>✅</td><td>❌</td><td>❌</td><td>❌</td><td>⚠️</td></tr>
+        <tr><td>Instadapp / Yearn</td><td>❌</td><td>⚠️</td><td>⚠️</td><td>❌</td><td>❌</td></tr>
+        <tr><td><b>1acc.finance</b></td><td><b>✅</b></td><td><b>✅</b></td><td><b>✅</b></td><td><b>✅</b></td><td><b>✅</b></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Team -->
+  <section id="team" class="section container">
+    <h2>Team</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Doris — Founder & CEO</h3>
+        <p class="muted">Former CEX Growth & BD Lead. 10+ yrs in strategy & marketing. Global user acquisition experience.</p>
+        <p>📧 <a href="mailto:doris.xiao1029@gmail.com">doris.xiao1029@gmail.com</a><br>💬 TG: <a href="https://t.me/Dorisxiao" target="_blank" rel="noopener">Dorisxiao</a></p>
+      </div>
+      <div class="card">
+        <h3>Dr. KJ — CTO</h3>
+        <p class="muted">Ph.D. in Cryptography. Web3 infra builder with expertise in account abstraction & automation.</p>
+      </div>
+      <div class="card">
+        <h3>Advisors & Contributors</h3>
+        <p class="muted">Distributed contributors across engineering & marketing in Asia and North America.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta" class="container cta">
+    <h3>Get Early Access</h3>
+    <p>Be the first to try 1acc.finance — your unified yield dashboard for CEX + DeFi.</p>
+    <form id="bottomForm">
+      <input type="email" name="email" placeholder="Enter your email" required>
+      <button type="submit">Join the waitlist</button>
+    </form>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div>&copy; <span id="year"></span> 1acc.finance — All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script>
+    // Lock scroll until email gate is closed
+    document.body.style.overflow = 'hidden';
+
+    const FORM_ENDPOINT = "https://script.google.com/macros/s/AKfycbwppjFbv_bP1-fXHZlPgrNfXJl3HKYs2Lcf9-J5frIRb05O0zKwqD4m-m87fsjEjuqN/exec";
+    const toast = (msg)=>{const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)};
+
+    async function submitEmail(email){
+      try {
+        await fetch(FORM_ENDPOINT,{
+          method:'POST',
+          headers:{'Content-Type':'application/x-www-form-urlencoded'},
+          body:`email=${encodeURIComponent(email)}`
+        });
+      } catch(e){ /* no-op */ }
+    }
+
+    // Email Gate
+    const overlay = document.getElementById('emailGate');
+    const gateForm = document.getElementById('gateForm');
+    const gateEmail = document.getElementById('gateEmail');
+    gateForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const email = gateEmail.value.trim();
+      if(!email) return;
+      await submitEmail(email);
+      overlay.style.transition='opacity .45s ease'; overlay.style.opacity='0';
+      setTimeout(()=>{
+        overlay.remove();                 // ensure overlay is removed from DOM
+        document.body.style.overflow='auto'; // restore scrolling
+        toast('Thanks for joining! 🎉');
+        window.scrollTo(0,0);             // ensure top of page
+      },460);
+    });
+
+    // Inline forms
+    function wireForm(id){
+      const form = document.getElementById(id);
+      if(!form) return;
+      form.addEventListener('submit', async (e)=>{
+        e.preventDefault();
+        const email = (new FormData(form)).get('email');
+        if(!email) return;
+        await submitEmail(email);
+        toast('Added to waitlist ✅');
+        form.reset();
+      });
+    }
+    wireForm('topForm');
+    wireForm('bottomForm');
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
